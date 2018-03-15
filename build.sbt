@@ -1,7 +1,11 @@
+import org.eclipse.jgit.lib.Repository
+import org.gitective.core.filter.commit.{AndCommitFilter, BugSetFilter, BugFilter, CommitMessageFindFilter}
+import org.gitective.core.{CommitFinder, CommitUtils}
 import sbt.Keys._
 import sbt._
 
 import scala.sys.process.Process
+
 //import sbtdocker.DockerPlugin.autoImport._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
@@ -9,6 +13,7 @@ name := """test-sbt-release"""
 organization := "com.bs"
 
 scalaVersion := Versions.scala212
+
 
 lazy val commonSettings = Defaults.coreDefaultSettings ++ Seq(
   publishTo := {
@@ -90,6 +95,33 @@ lazy val publishDocker = ReleaseStep(action = st => {
   st
 })
 
+lazy val makeReleaseNotes = ReleaseStep(action = st => {
+  val extracted = Project.extract(st)
+  val ref: ProjectRef = extracted.get(thisProjectRef)
+  val value = Process("git tag -l")
+  val tags: Stream[String] = value.lineStream
+  val bestPrevTag = tags.filter(p => !p.contains("SNAPSHOT") && !p.contains("snapshot")).max
+
+  st.log.info(s"Previous tag deployed was [$bestPrevTag]")
+
+  val repo: Repository = new org.eclipse.jgit.internal.storage.file.FileRepository(".git")
+  val commitFinder: CommitFinder = new CommitFinder(repo)
+  val lastTagRef = repo.getTags.get(bestPrevTag)
+  import org.gitective.core.filter.commit.CommitListFilter
+  val commits = new CommitListFilter
+  val pattern = "\\{JIRA:[0-9A-Z]{4,}\\}"
+  val andFilter = new AndCommitFilter(new CommitMessageFindFilter("*"),commits)
+
+  val finder = commitFinder.setFilter(andFilter).findFrom(lastTagRef.getObjectId)
+
+  commits.getCommits.forEach( x => {
+    st.log.info(x.getFullMessage)
+  }
+  )
+
+  st
+})
+
 publishTo := {
   if (version.value.trim.endsWith("SNAPSHOT"))
     Some("Artifactory Realm" at "https://washingtonpost.jfrog.io/washingtonpost/libs-snapshot-local")
@@ -105,14 +137,15 @@ releaseTagComment    := s"Just for fun Releasing ${(version in ThisBuild).value}
 releaseCommitMessage := s"Setting this commit version to meh... ${(version in ThisBuild).value}"
 
 releaseProcess := Seq[ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runTest,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  publishDocker,
-  setNextVersion,
-  commitNextVersion,
-  pushChanges
+//  checkSnapshotDependencies,
+//  inquireVersions,
+//  runTest,
+//  setReleaseVersion,
+//  commitReleaseVersion,
+    tagRelease,
+//  publishDocker,
+//  setNextVersion,
+//  commitNextVersion,
+//  pushChanges
+    makeReleaseNotes
 )
