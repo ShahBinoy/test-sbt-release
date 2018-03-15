@@ -147,5 +147,7 @@ releaseProcess := Seq[ReleaseStep](
 //  setNextVersion,
 //  commitNextVersion,
 //  pushChanges
-    makeReleaseNotes
+    makeReleaseNotes,
+  tagRelease,
+  pushChanges
 )
