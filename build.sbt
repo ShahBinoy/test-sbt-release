@@ -97,6 +97,13 @@ publishTo := {
     Some("Artifactory Realm" at "https://washingtonpost.jfrog.io/washingtonpost/libs-release-local")
 }
 
+//val releaseTagComment    : TaskKey[String]
+//val releaseCommitMessage : TaskKey[String]
+
+// defaults
+releaseTagComment    := s"Just for fun Releasing ${(version in ThisBuild).value}\n Second line for clarity"
+releaseCommitMessage := s"Setting this commit version to meh... ${(version in ThisBuild).value}"
+
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
   inquireVersions,
