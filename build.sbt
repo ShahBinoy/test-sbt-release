@@ -80,11 +80,12 @@ loginAwsEcr := {
 lazy val publishDocker = ReleaseStep(action = st => {
   val extracted = Project.extract(st)
   val ref: ProjectRef = extracted.get(thisProjectRef)
+  st.log.info("Trying to publish docker Level 1")
   extracted.runAggregated(loginAwsEcr in ref, st)
   //  extracted.runAggregated(
   //    sbtdocker.DockerKeys.dockerBuildAndPush in sbtdocker.DockerPlugin.autoImport.docker in ref,
   //    st)
-  st.log.info("Trying to publish docker")
+  st.log.info("Trying to publish docker Level 2")
   st
 })
 
