@@ -96,15 +96,13 @@ publishTo := {
     Some("Artifactory Realm" at "https://washingtonpost.jfrog.io/washingtonpost/libs-release-local")
 }
 
-
-lazy val releaseSettings = Seq(
-  releaseProcess := Seq[ReleaseStep](
-    checkSnapshotDependencies,
-    inquireVersions,
-    runTest,
-    setReleaseVersion,
-    commitReleaseVersion,
-    publishDocker,
-    setNextVersion,
-    commitNextVersion
-  ))
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  publishDocker,
+  setNextVersion,
+  commitNextVersion
+)
