@@ -103,9 +103,9 @@ releaseProcess := Seq[ReleaseStep](
   runTest,
   setReleaseVersion,
   commitReleaseVersion,
+  tagRelease,
   publishDocker,
   setNextVersion,
   commitNextVersion,
-  tagRelease,
   pushChanges
 )
