@@ -71,28 +71,18 @@ lazy val loginAwsEcr = TaskKey[Unit]("loginAwsEcr", "Login AWS ECR")
 
 loginAwsEcr := {
   //  import sys.process._
-  //  val dockerLogin = Seq("aws", "ecr", "get-login", "--no-include-email", "--region", "eu-central-1").!!
+  //  val dockerLogin = Seq("aws", "ecr", "get-login", "--no-include-email", "--region", "us-east-1").!!
   //  dockerLogin.replaceAll("\n", "").split(" ").toSeq.!
   val log = streams.value.log
   log.info("Logging into ECR")
 }
 
-lazy val loginAwsCmr = TaskKey[Unit]("loginAwsCmr", "Login AWS CMR")
-
-loginAwsCmr := {
-  //  import sys.process._
-  //  val dockerLogin = Seq("aws", "ecr", "get-login", "--no-include-email", "--region", "eu-central-1").!!
-  //  dockerLogin.replaceAll("\n", "").split(" ").toSeq.!
-  val log = streams.value.log
-  log.info("Logging into CMR")
-}
 
 lazy val publishDocker = ReleaseStep(action = st => {
   val extracted = Project.extract(st)
   val ref: ProjectRef = extracted.get(thisProjectRef)
   st.log.info("Trying to publish docker Level 1")
   extracted.runAggregated(loginAwsEcr in ref, st)
-  extracted.runAggregated(loginAwsCmr in ref, st)
   //  extracted.runAggregated(
   //    sbtdocker.DockerKeys.dockerBuildAndPush in sbtdocker.DockerPlugin.autoImport.docker in ref,
   //    st)
@@ -115,5 +105,6 @@ releaseProcess := Seq[ReleaseStep](
   commitReleaseVersion,
   publishDocker,
   setNextVersion,
-  commitNextVersion
+  commitNextVersion,
+  tagRelease
 )
