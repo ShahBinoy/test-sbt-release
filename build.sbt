@@ -88,6 +88,14 @@ lazy val publishDocker = ReleaseStep(action = st => {
   st
 })
 
+publishTo := {
+  if (version.value.trim.endsWith("SNAPSHOT"))
+    Some("Artifactory Realm" at "https://washingtonpost.jfrog.io/washingtonpost/libs-snapshot-local")
+  else
+    Some("Artifactory Realm" at "https://washingtonpost.jfrog.io/washingtonpost/libs-release-local")
+}
+
+
 lazy val releaseSettings = Seq(
   releaseProcess := Seq[ReleaseStep](
     checkSnapshotDependencies,
