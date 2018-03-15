@@ -10,8 +10,9 @@ target
 /project/project
 /project/target/
 /project/project/
-*.iws
-*.ipr
+**/*.iws
+**/*.ipr
+**/*.iml
 **/*.log
 **/*.jtl
 /bin/
@@ -27,8 +28,6 @@ target
 .g8/
 .gitignore
 .idea/
-my-lib/
-my-web/
 project/project/
 project/target/
 target/
