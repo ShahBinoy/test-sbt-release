@@ -77,7 +77,7 @@ loginAwsEcr := {
   log.info("Logging into ECR")
 }
 
-lazy val loginAwsCmr = TaskKey[Unit]("loginAwsEcr", "Login AWS ECR")
+lazy val loginAwsCmr = TaskKey[Unit]("loginAwsCmr", "Login AWS CMR")
 
 loginAwsCmr := {
   //  import sys.process._
