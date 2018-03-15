@@ -110,7 +110,7 @@ lazy val makeReleaseNotes = ReleaseStep(action = st => {
   import org.gitective.core.filter.commit.CommitListFilter
   val commits = new CommitListFilter
   val pattern = "\\{JIRA:[0-9A-Z]{4,}\\}"
-  val andFilter = new AndCommitFilter(new CommitMessageFindFilter("*"),commits)
+  val andFilter = new AndCommitFilter(new CommitMessageFindFilter(".*"),commits)
 
   val finder = commitFinder.setFilter(andFilter).findFrom(lastTagRef.getObjectId)
 
