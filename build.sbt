@@ -104,22 +104,12 @@ lazy val makeReleaseNotes = ReleaseStep(action = st => {
 
   st.log.info(s"Previous tag deployed was [$bestPrevTag]")
 
-  val repo: Repository = new org.eclipse.jgit.internal.storage.file.FileRepository(".git")
-  val commitFinder: CommitFinder = new CommitFinder(repo)
-  val lastTagRef = repo.getTags.get(bestPrevTag)
-  st.log.info(s"Last Tag Ref is : $lastTagRef")
-  import org.gitective.core.filter.commit.CommitListFilter
-  val commits = new CommitListFilter
 
-  val pattern = "\\{JIRA:[0-9A-Z]{4,}\\}"
-  val andFilter = new AndCommitFilter(new CommitMessageFindFilter(".*"),commits)
+  val jiraRegex = "\\{JIRA:[0-9A-Z]{4,}\\}".r
 
-  commitFinder.setFilter(andFilter).findFrom(lastTagRef.getObjectId)
 
-  commits.getCommits.forEach( x => {
-    st.log.info(x.getFullMessage)
-  }
-  )
+  st.log.info(x.getFullMessage)
+
 
   st
 })
