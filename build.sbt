@@ -98,8 +98,8 @@ lazy val publishDocker = ReleaseStep(action = st => {
 lazy val makeReleaseNotes = ReleaseStep(action = st => {
   val extracted = Project.extract(st)
   val ref: ProjectRef = extracted.get(thisProjectRef)
-  val value = Process("git tag -l")
-  val tags: Stream[String] = value.lineStream
+  val tagsByCmd = Process("git tag -l")
+  val tags: Stream[String] = tagsByCmd.lineStream
   val bestPrevTag = tags.filter(p => !p.contains("SNAPSHOT") && !p.contains("snapshot")).max
 
   st.log.info(s"Previous tag deployed was [$bestPrevTag]")
@@ -107,12 +107,14 @@ lazy val makeReleaseNotes = ReleaseStep(action = st => {
   val repo: Repository = new org.eclipse.jgit.internal.storage.file.FileRepository(".git")
   val commitFinder: CommitFinder = new CommitFinder(repo)
   val lastTagRef = repo.getTags.get(bestPrevTag)
+  st.log.info(s"Last Tag Ref is : $lastTagRef")
   import org.gitective.core.filter.commit.CommitListFilter
   val commits = new CommitListFilter
+
   val pattern = "\\{JIRA:[0-9A-Z]{4,}\\}"
   val andFilter = new AndCommitFilter(new CommitMessageFindFilter(".*"),commits)
 
-  val finder = commitFinder.setFilter(andFilter).findFrom(lastTagRef.getObjectId)
+  commitFinder.setFilter(andFilter).findFrom(lastTagRef.getObjectId)
 
   commits.getCommits.forEach( x => {
     st.log.info(x.getFullMessage)
